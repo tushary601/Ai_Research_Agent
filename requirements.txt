@@ -1,11 +1,12 @@
-Flask>=2.0
-python-dotenv>=0.19
-google-api-python-client>=2.0
-newspaper3k>=0.2.8
-google-generativeai>=0.6.0
+Flask
+python-dotenv
+google-api-python-client
+newspaper3k
+google-generativeai
 
-requests>=2.25
-readability-lxml>=0.8
-trafilatura>=1.5.0
-beautifulsoup4>=4.12.0
-lxml>=4.9.3
+requests
+readability-lxml
+trafilatura
+beautifulsoup4
+lxml
+reportlab
