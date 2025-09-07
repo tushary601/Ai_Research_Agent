@@ -1,0 +1,303 @@
+/* --- Google Fonts & Basic Reset --- */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Source+Code+Pro:wght@400;600&display=swap");
+
+:root {
+  --bg-color: #0f2027;
+  --surface-color: rgba(0, 0, 0, 0.25);
+  --primary-color: #4a90e2;
+  --text-color: #f0f0f0;
+  --subtle-text-color: #a0a0a0;
+  --border-color: rgba(255, 255, 255, 0.2);
+  --shadow-color: rgba(0, 0, 0, 0.4);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  height: 100vh;
+  background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+  color: var(--text-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.dashboard-header {
+  display: flex;
+  flex-direction: column; /* stacks children vertically */
+  align-items: flex-start; /* left-align both */
+  gap: 0.5rem; /* space between logo and welcome */
+}
+
+/* --- Page Transition Logic --- */
+section {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+  opacity: 0;
+  transform: scale(0.95);
+  pointer-events: none;
+}
+section.active {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+/* --- Login Page Styles --- */
+.login-container {
+  padding: 40px 50px;
+  text-align: center;
+  background: var(--surface-color);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px var(--shadow-color);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border-color);
+  max-width: 450px;
+  width: 90%;
+}
+.login-container h1 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+.login-container p {
+  margin-bottom: 30px;
+  font-weight: 300;
+  font-size: 1.1em;
+}
+.input-field {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: rgba(0, 0, 0, 0.2);
+  font-size: 1em;
+  color: #fff;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.input-field::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+.input-field:focus {
+  border-color: #fff;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+.submit-btn {
+  width: 100%;
+  padding: 15px;
+  border-radius: 8px;
+  border: none;
+  background-color: #f0f0f0;
+  color: #0f2027;
+  font-size: 1.1em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.3s;
+}
+.submit-btn:hover {
+  transform: scale(1.03);
+  background-color: #ffffff;
+}
+
+/* --- Dashboard Styles --- */
+#dashboard-section {
+  width: 90%;
+  max-width: 900px;
+  height: 90vh;
+  background: var(--surface-color);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px var(--shadow-color);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border-color);
+  padding: 30px;
+  flex-direction: column;
+}
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+.dashboard-header h2 {
+  font-size: 1.8em;
+  font-weight: 400;
+}
+#user-name {
+  font-weight: 700;
+  color: #fff;
+}
+.dashboard-header .logo {
+  font-size: 1.2em;
+  font-weight: 700;
+}
+
+.search-container {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+#query-input {
+  flex-grow: 1;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: rgba(0, 0, 0, 0.2);
+  font-size: 1.1em;
+  color: #fff;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  font-family: "Inter", sans-serif;
+}
+#query-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 15px rgba(74, 144, 226, 0.3);
+}
+#search-button,
+#export-button {
+  padding: 0 18px;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--primary-color);
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#export-button.hidden {
+  display: none;
+}
+#search-button:hover,
+#export-button:hover {
+  background-color: #357abd;
+  transform: scale(1.05);
+}
+
+/* --- Results Area --- */
+#results-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 15px;
+}
+#results-container::-webkit-scrollbar {
+  width: 8px;
+}
+#results-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+#results-container::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 20px;
+}
+
+.welcome-message,
+.error-message {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--subtle-text-color);
+}
+.error-message {
+  color: #e24a4a;
+}
+.result-item {
+  border-bottom: 1px solid var(--border-color);
+  padding: 1.5rem 0;
+}
+.result-item:first-child {
+  padding-top: 0;
+}
+.result-item:last-child {
+  border-bottom: none;
+}
+.result-item h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.4rem;
+  font-family: "Inter", sans-serif;
+}
+.source-link a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.3s;
+}
+.source-link a:hover {
+  color: #6a9fd2;
+}
+.summary-content {
+  margin-top: 1rem;
+  font-family: "Inter", sans-serif;
+}
+.summary-content ul {
+  list-style-position: inside;
+  padding-left: 1rem;
+}
+.summary-content li {
+  margin-bottom: 0.5rem;
+}
+.summary-content p {
+  margin-bottom: 1rem;
+}
+.summary-content strong {
+  font-weight: 600;
+}
+.summary-content code {
+  font-family: "Source Code Pro", monospace;
+  background-color: #3a3a3a;
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+/* Loader */
+#loader {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+  gap: 1rem;
+  color: var(--subtle-text-color);
+}
+#loader.hidden {
+  display: none;
+}
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid var(--border-color);
+  border-top: 5px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

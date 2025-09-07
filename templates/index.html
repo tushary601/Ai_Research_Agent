@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Research Agent Portal</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <section id="login-section" class="active">
+      <div class="login-container">
+        <h1>Welcome</h1>
+        <p>Enter your name to access your AI Research Agent</p>
+        <form id="agent-form">
+          <input
+            type="text"
+            id="name-input"
+            class="input-field"
+            placeholder="Your Name"
+            required
+            autocomplete="off"
+          />
+          <button type="submit" class="submit-btn">Launch Agent</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="dashboard-section">
+      <header class="dashboard-header">
+        <span class="logo" style="font-size: 40px">AI Research Agent</span>
+        <div class="welcome-header">
+          <h2>Welcome, <span id="user-name"></span></h2>
+        </div>
+      </header>
+
+      <div class="search-container">
+        <input
+          type="text"
+          id="query-input"
+          placeholder="Enter your research topic..."
+        />
+        <button id="search-button" title="Search">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+        <button id="export-button" class="hidden" title="Export PDF">
+          Export
+        </button>
+      </div>
+
+      <main id="results-container" aria-live="polite">
+        <div id="loader" class="hidden">
+          <div class="spinner"></div>
+          <p>Contacting sources and generating summaries...</p>
+        </div>
+        <div id="welcome-message">
+          <p>Enter a topic above to begin your research.</p>
+        </div>
+      </main>
+    </section>
+    <script>
+      const loginSection = document.getElementById("login-section");
+      const dashboardSection = document.getElementById("dashboard-section");
+      const agentForm = document.getElementById("agent-form");
+      const nameInput = document.getElementById("name-input");
+      const userNameSpan = document.getElementById("user-name");
+
+      const searchButton = document.getElementById("search-button");
+      const exportButton = document.getElementById("export-button");
+      const queryInput = document.getElementById("query-input");
+      const resultsContainer = document.getElementById("results-container");
+      const loader = document.getElementById("loader");
+
+      let lastResults = [];
+      let lastQuery = "";
+
+      // Login form
+      agentForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const userName = nameInput.value.trim();
+        if (userName) {
+          userNameSpan.textContent = userName;
+          loginSection.classList.remove("active");
+          dashboardSection.classList.add("active");
+        }
+      });
+
+      // Perform search
+      const performSearch = async () => {
+        const query = queryInput.value.trim();
+        if (!query) {
+          alert("Please enter a research topic.");
+          return;
+        }
+        lastQuery = query;
+
+        loader.classList.remove("hidden");
+        resultsContainer.innerHTML = "";
+        resultsContainer.appendChild(loader);
+        exportButton.classList.add("hidden");
+
+        try {
+          const response = await fetch("/search", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            const errorMessage =
+              errorData?.error ||
+              `Server responded with status: ${response.status}`;
+            throw new Error(errorMessage);
+          }
+
+          const summaries = await response.json();
+          lastResults = summaries;
+          exportButton.classList.remove("hidden");
+          displayResults(summaries);
+        } catch (error) {
+          console.error("Error during fetch operation:", error);
+          resultsContainer.innerHTML = `
+        <div class="error-message">
+          <strong>Error:</strong> ${error.message}.<br />
+          Possible causes:
+          <ul>
+            <li>Invalid or missing API keys</li>
+            <li>Gemini summarization failed</li>
+            <li>Articles could not be parsed (paywalls, video links, JS-heavy pages)</li>
+          </ul>
+          Please check your API keys and Flask terminal logs for details.
+        </div>`;
+        } finally {
+          loader.classList.add("hidden");
+        }
+      };
+
+      searchButton.addEventListener("click", performSearch);
+      queryInput.addEventListener("keypress", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          performSearch();
+        }
+      });
+
+      // Export PDF only
+      async function exportPdf() {
+        if (!lastResults.length) return;
+        try {
+          const resp = await fetch("/export", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ items: lastResults, query: lastQuery }),
+          });
+          if (!resp.ok) throw new Error("Export failed");
+          const blob = await resp.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "summary.pdf";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+        } catch (e) {
+          alert("Export failed: " + e.message);
+        }
+      }
+
+      exportButton.addEventListener("click", exportPdf);
+
+      // Helper: badge for recent items
+      function badge(recent) {
+        return recent
+          ? '<span style="font-size:.8rem;padding:.2rem .5rem;border:1px solid rgba(255,255,255,.3);border-radius:999px;margin-left:.5rem;">Recent</span>'
+          : "";
+      }
+
+      // Render results
+      function displayResults(summaries) {
+        resultsContainer.innerHTML = "";
+        if (!summaries || summaries.length === 0) {
+          resultsContainer.innerHTML = `<div class="welcome-message"><p>No relevant articles could be summarized. Try another query.</p></div>`;
+          return;
+        }
+
+        summaries.forEach((item) => {
+          const articleElement = document.createElement("article");
+          articleElement.className = "result-item";
+          const displayUrl = new URL(item.url);
+          const dateText = item.date
+            ? new Date(item.date).toLocaleString()
+            : "Unknown date";
+
+          articleElement.innerHTML = `
+        <h2>${item.title || "Untitled"} ${badge(item.recent)}</h2>
+        <div class="source-link">
+          <a href="${item.url}" target="_blank" rel="noopener">
+            ${displayUrl.hostname}
+          </a>
+          <span style="margin-left:.5rem;font-size:.9rem;opacity:.8;">
+            ${dateText}
+          </span>
+        </div>
+        <div class="summary-content">${marked.parse(item.summary)}</div>
+      `;
+          resultsContainer.appendChild(articleElement);
+        });
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  </body>
+</html>
