@@ -1,4 +1,4 @@
-Hackathon Project-Ai Resarch Agent
+Hackathon Project-Ai Research Agent
 
 
 ## Setup
