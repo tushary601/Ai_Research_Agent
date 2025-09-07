@@ -21,8 +21,3 @@ python app.py
 ```
 
 Open http://127.0.0.1:8000
-
-## Notes
-
-- If you see “Found sources, but none could be summarized”, the pages may be paywalled/blocked. Try another query.
-- Check the terminal logs to see which extractor succeeded and whether Gemini failed.
