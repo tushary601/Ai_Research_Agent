@@ -1,3 +1,6 @@
+Hackathon Project
+
+
 ## Setup
 
 1. Create a `.env` file (same folder as `app.py`):
