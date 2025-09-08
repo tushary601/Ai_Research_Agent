@@ -24,4 +24,7 @@ python app.py
 ```
  LLM- Gemini 1.5 flash or 2.5 flash
  Google search engine
+
+.env file have temporary API key and ID
+
  
