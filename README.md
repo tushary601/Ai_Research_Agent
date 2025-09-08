@@ -22,3 +22,6 @@ pip install -r requirements.txt
 ```
 python app.py
 ```
+ LLM- Gemini 1.5 flash or 2.5 flash
+ Google search engine
+ 
